@@ -10,6 +10,10 @@ _URLS = {
             'mailbox'     : '/maildir.jsp?email={email}',
             'text_detail' : '/showmail2.jsp?email={email}&msgid={msg_id}'
         }
+_EXTRA_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.97 Safari/537.22'
+}
+
 # prepend base url to all urls
 for key, value in _URLS.iteritems():
     _URLS[key] = _BASE_URL + value
@@ -48,7 +52,7 @@ class Letter(object):
     def fetch(self):
         """ Download letter data from mailinator """
         url = _URLS['text_detail'].format(email=self.email, msg_id=self.msg_id)
-        request = requests.get(url)
+        request = requests.get(url, headers=_EXTRA_HEADERS)
 
         if request.status_code != 200:
             raise MailinatorException('Non-200 status code received when fetching email')
@@ -95,7 +99,7 @@ class Letter(object):
 
 def get_mail(name):
     """ Given a name, return a list of emails for the email {name}@mailinator.com """
-    request = requests.get(_URLS['mailbox'].format(email=name))
+    request = requests.get(_URLS['mailbox'].format(email=name), headers=_EXTRA_HEADERS)
 
     if request.status_code != 200:
         raise MailinatorException('Non-200 status code received when fetching inbox')
